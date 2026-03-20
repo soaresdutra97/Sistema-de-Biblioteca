@@ -2,15 +2,15 @@
 
 API REST de biblioteca desenvolvida com `Java`, `Spring Boot`, `Spring Web`, `Spring Data JPA`, `Hibernate`, `Bean Validation`, `Lombok` e banco `H2`.
 
-Esta versao do projeto foi construída com foco em aprendizado de:
+Esta versao do projeto foi construida com foco em aprendizado de:
 
 - Java aplicado a backend
 - arquitetura em camadas
 - Spring Core e Spring Boot
-- modelagem de domínio
+- modelagem de dominio
 - JPA e relacionamentos
-- boas práticas de organização de código
-- validação e tratamento de erros
+- boas praticas de organizacao de codigo
+- validacao e tratamento de erros
 
 ## Visao Geral
 
@@ -24,12 +24,14 @@ O sistema permite gerenciar:
 - usuarios
 - emprestimos
 - devolucoes
+- multas por atraso
 
 O projeto separa de forma intencional:
 
 - `Livro`: obra bibliografica
 - `Exemplar`: copia fisica de um livro
 - `Emprestimo`: transacao de emprestimo e devolucao
+- `Multa`: penalidade financeira gerada por atraso
 
 Essa modelagem deixa o sistema mais proximo de uma biblioteca real.
 
@@ -65,15 +67,15 @@ O projeto segue uma arquitetura em camadas.
 
 ```text
 src/main/java/com/biblioteca/biblioteca
-├── config
-├── controller
-├── dto
-├── entity
-├── enums
-├── exception
-├── repository
-├── service
-└── Treinamento
+|-- config
+|-- controller
+|-- dto
+|-- entity
+|-- enums
+|-- exception
+|-- repository
+|-- service
+`-- Treinamento
 ```
 
 ### Papel De Cada Camada
@@ -97,7 +99,7 @@ src/main/java/com/biblioteca/biblioteca
   Centraliza tratamento de erros e respostas padronizadas.
 
 - `enums`
-  Armazena tipos controlados do dominio, como status de exemplar.
+  Armazena tipos controlados do dominio, como status de exemplar e status de multa.
 
 - `Treinamento`
   Contem classes didaticas de estudo separadas da aplicacao principal.
@@ -127,6 +129,9 @@ src/main/java/com/biblioteca/biblioteca
 - `Emprestimo`
   Representa a transacao de emprestimo e devolucao.
 
+- `Multa`
+  Representa a penalidade financeira gerada por devolucao em atraso.
+
 ### Relacionamentos
 
 - `Livro -> Autor`
@@ -147,6 +152,9 @@ src/main/java/com/biblioteca/biblioteca
 - `Emprestimo -> Usuario`
   `ManyToOne`
 
+- `Multa -> Emprestimo`
+  `OneToOne`
+
 ### Evolucao Importante Do Dominio
 
 Inicialmente, o sistema trabalhava apenas com `Livro` e `quantidadeDisponivel`.
@@ -161,6 +169,8 @@ Com isso:
 - o emprestimo passou a ocorrer sobre um exemplar especifico
 - o sistema passou a controlar status do exemplar
 - o acervo ficou mais proximo de um sistema real
+
+Depois disso, foi adicionada a entidade `Multa`, para representar atrasos de devolucao com regras financeiras proprias.
 
 ## Funcionalidades Implementadas
 
@@ -220,6 +230,14 @@ Com isso:
 - buscar emprestimo por id
 - registrar devolucao
 
+### Multas
+
+- gerar multa automaticamente em devolucao atrasada
+- listar multas
+- listar multas por usuario
+- buscar multa por id
+- registrar pagamento de multa
+
 ## Regras De Negocio Ja Aplicadas
 
 - nao permite ISBN duplicado
@@ -230,6 +248,7 @@ Com isso:
 - nao permite editora com nome duplicado
 - nao permite codigo patrimonial duplicado para exemplar
 - usuario inativo nao pode realizar emprestimo
+- usuario com multa pendente nao pode realizar novos emprestimos
 - so empresta quando existe exemplar com status `DISPONIVEL`
 - ao emprestar:
   - um exemplar disponivel e selecionado
@@ -237,6 +256,11 @@ Com isso:
 - ao devolver:
   - o emprestimo e encerrado
   - o status do exemplar volta para `DISPONIVEL`
+- ao devolver com atraso:
+  - o sistema calcula os dias de atraso
+  - gera uma multa automaticamente
+  - a multa nasce com status `PENDENTE`
+- multa paga altera o status financeiro para `PAGA`
 
 ## Boas Praticas Aplicadas
 
@@ -303,6 +327,7 @@ Exemplos:
 - documento com 11 digitos
 - titulo obrigatorio
 - categoria obrigatoria
+- data de pagamento obrigatoria
 
 ## Tratamento De Erros
 
@@ -317,6 +342,8 @@ Isso permite devolver respostas padronizadas para:
 - recurso nao encontrado
 - regra de negocio violada
 - erro de validacao
+- rota nao encontrada
+- metodo HTTP nao permitido
 - erro interno inesperado
 
 ## Banco De Dados
@@ -400,6 +427,13 @@ Configuracao padrao:
 - `GET /emprestimos/{id}`
 - `PATCH /emprestimos/{id}/devolucao`
 
+### Multas
+
+- `GET /multas`
+- `GET /multas?usuarioId={id}`
+- `GET /multas/{id}`
+- `PATCH /multas/{id}/pagar`
+
 ## Como Rodar O Projeto
 
 ### Pre-requisitos
@@ -429,6 +463,8 @@ Ou pela IDE, executando a classe:
 6. cadastrar usuario
 7. registrar emprestimo
 8. registrar devolucao
+9. consultar multa gerada por atraso
+10. pagar multa
 
 ## Limites Atuais Da V1
 
@@ -442,16 +478,33 @@ Esta versao ainda pode evoluir em varios pontos, por exemplo:
 - PostgreSQL
 - Flyway ou Liquibase
 - reservas
-- multas
 - renovacao de emprestimos
 - historico detalhado do usuario
+- limite de emprestimos simultaneos
+- bloqueio automatico mais rico por inadimplencia
 
 ## Proximos Passos Possiveis
 
 - adicionar reserva de livros
-- adicionar multa por atraso
+- adicionar renovacao de emprestimos
+- adicionar historico de emprestimos por usuario
+- adicionar limite de emprestimos simultaneos
 - adicionar autenticacao com Spring Security e JWT
 - trocar H2 por PostgreSQL
 - criar testes unitarios e de integracao
 - adicionar documentacao da API com Swagger
-=======
+
+## Valor Do Projeto Para Portfolio
+
+Este projeto demonstra:
+
+- conhecimento de Java backend
+- uso pratico de Spring Boot
+- uso de JPA e Hibernate
+- modelagem de dominio
+- arquitetura em camadas
+- validacao e tratamento de erros
+- evolucao de um dominio simples para um dominio mais realista
+- separacao entre obra bibliografica, exemplar fisico, emprestimo e multa
+
+Para uma `versao 1`, o sistema ja apresenta uma base solida e coerente para portfolio.
