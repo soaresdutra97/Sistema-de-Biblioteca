@@ -39,6 +39,7 @@ public class EmprestimoService {
     // nos seus proprios services.
     private final ExemplarService exemplarService;
     private final UsuarioService usuarioService;
+    private final MultaService multaService;
 
     // Repare que este service depende de:
     // - um repository
@@ -51,11 +52,13 @@ public class EmprestimoService {
     public EmprestimoService(
         EmprestimoRepository emprestimoRepository,
         ExemplarService exemplarService,
-        UsuarioService usuarioService
+        UsuarioService usuarioService,
+        MultaService multaService
     ) {
         this.emprestimoRepository = emprestimoRepository;
         this.exemplarService = exemplarService;
         this.usuarioService = usuarioService;
+        this.multaService = multaService;
     }
 
     @Transactional
@@ -70,6 +73,10 @@ public class EmprestimoService {
         // Regras de negocio do emprestimo:
         if (Boolean.FALSE.equals(usuario.getAtivo())) {
             throw new RegraDeNegocioException("Usuario inativo nao pode realizar emprestimos.");
+        }
+
+        if (multaService.usuarioPossuiMultaPendente(usuario.getId())) {
+            throw new RegraDeNegocioException("Usuario inadimplente nao pode realizar novos emprestimos.");
         }
 
         if (emprestimoRepository.existsByExemplarIdAndAtivoTrue(exemplar.getId())) {
@@ -128,6 +135,11 @@ public class EmprestimoService {
         exemplar.getLivro().setQuantidadeDisponivel(exemplar.getLivro().getQuantidadeDisponivel() + 1);
 
         Emprestimo emprestimoAtualizado = emprestimoRepository.save(emprestimo);
+
+        // Depois da devolucao, verificamos se houve atraso suficiente
+        // para gerar multa.
+        multaService.gerarSeHouverAtraso(emprestimoAtualizado);
+
         return toResponse(emprestimoAtualizado);
     }
 
