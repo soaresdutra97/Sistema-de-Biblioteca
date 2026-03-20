@@ -30,9 +30,11 @@ public class MultaService {
     private static final BigDecimal VALOR_DIARIO_MULTA = new BigDecimal("2.50");
 
     private final MultaRepository multaRepository;
+    private final UsuarioService usuarioService;
 
-    public MultaService(MultaRepository multaRepository) {
+    public MultaService(MultaRepository multaRepository, UsuarioService usuarioService) {
         this.multaRepository = multaRepository;
+        this.usuarioService = usuarioService;
     }
 
     @Transactional
@@ -76,6 +78,11 @@ public class MultaService {
 
     @Transactional(readOnly = true)
     public List<MultaResponse> listarPorUsuario(Long usuarioId) {
+        // Validamos se o usuario existe antes de consultar as multas.
+        // Sem isso, um id inexistente apenas retornaria lista vazia,
+        // o que seria ambiguo para quem consome a API.
+        usuarioService.buscarEntidadePorId(usuarioId);
+
         return multaRepository.findByEmprestimoUsuarioId(usuarioId).stream().map(this::toResponse).toList();
     }
 
