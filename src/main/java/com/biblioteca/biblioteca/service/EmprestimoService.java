@@ -110,6 +110,22 @@ public class EmprestimoService {
             .toList();
     }
 
+    // Este metodo lista os emprestimos de um usuario especifico.
+    //
+    // Ele e util para construir historico por usuario,
+    // que e uma necessidade comum em sistemas de biblioteca.
+    @Transactional(readOnly = true)
+    public List<EmprestimoResponse> listarPorUsuario(Long usuarioId) {
+        // Antes de listar, garantimos que o usuario existe.
+        // Isso evita consultas "soltas" para ids inexistentes.
+        usuarioService.buscarEntidadePorId(usuarioId);
+
+        return emprestimoRepository.findByUsuarioId(usuarioId)
+            .stream()
+            .map(this::toResponse)
+            .toList();
+    }
+
     @Transactional(readOnly = true)
     public EmprestimoResponse buscarPorId(Long id) {
         Emprestimo emprestimo = buscarEntidadePorId(id);
