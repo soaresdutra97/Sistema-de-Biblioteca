@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 // Controller de emprestimos.
@@ -43,9 +44,24 @@ public class EmprestimoController {
             .body(response);
     }
 
+    // Este endpoint agora aceita filtro opcional por usuario.
+    //
+    // Exemplos:
+    // GET /emprestimos
+    // GET /emprestimos?usuarioId=1
+    //
+    // Isso mantem a API simples:
+    // um unico endpoint de listagem, com ou sem filtro.
     @GetMapping
-    public ResponseEntity<List<EmprestimoResponse>> listarTodos() {
-        List<EmprestimoResponse> response = emprestimoService.listarTodos();
+    public ResponseEntity<List<EmprestimoResponse>> listarTodos(@RequestParam(required = false) Long usuarioId) {
+        List<EmprestimoResponse> response;
+
+        if (usuarioId != null) {
+            response = emprestimoService.listarPorUsuario(usuarioId);
+        } else {
+            response = emprestimoService.listarTodos();
+        }
+
         return ResponseEntity.ok(response);
     }
 

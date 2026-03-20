@@ -506,5 +506,3 @@ Este projeto demonstra:
 - validacao e tratamento de erros
 - evolucao de um dominio simples para um dominio mais realista
 - separacao entre obra bibliografica, exemplar fisico, emprestimo e multa
-
-Para uma `versao 1`, o sistema ja apresenta uma base solida e coerente para portfolio.

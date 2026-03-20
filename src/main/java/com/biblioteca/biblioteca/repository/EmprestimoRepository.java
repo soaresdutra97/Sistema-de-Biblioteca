@@ -1,6 +1,7 @@
 package com.biblioteca.biblioteca.repository;
 
 import com.biblioteca.biblioteca.entity.Emprestimo;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 // Este repository acessa os dados de emprestimo.
@@ -33,5 +34,7 @@ public interface EmprestimoRepository extends JpaRepository<Emprestimo, Long> {
     //
     // O Spring Data JPA consegue criar muitas consultas so pelo nome do metodo,
     // desde que ele siga os padroes reconhecidos pelo framework.
+    List<Emprestimo> findByUsuarioId(Long usuarioId);
+
     boolean existsByExemplarIdAndAtivoTrue(Long exemplarId);
 }
