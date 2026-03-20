@@ -227,6 +227,7 @@ Depois disso, foi adicionada a entidade `Multa`, para representar atrasos de dev
 
 - registrar emprestimo
 - listar emprestimos
+- listar emprestimos por usuario
 - buscar emprestimo por id
 - registrar devolucao
 
@@ -250,6 +251,7 @@ Depois disso, foi adicionada a entidade `Multa`, para representar atrasos de dev
 - usuario inativo nao pode realizar emprestimo
 - usuario com multa pendente nao pode realizar novos emprestimos
 - so empresta quando existe exemplar com status `DISPONIVEL`
+- o sistema permite consultar o historico de emprestimos de um usuario pelo seu id
 - ao emprestar:
   - um exemplar disponivel e selecionado
   - o status do exemplar muda para `EMPRESTADO`
@@ -424,6 +426,7 @@ Configuracao padrao:
 
 - `POST /emprestimos`
 - `GET /emprestimos`
+- `GET /emprestimos?usuarioId={id}`
 - `GET /emprestimos/{id}`
 - `PATCH /emprestimos/{id}/devolucao`
 
@@ -462,9 +465,10 @@ Ou pela IDE, executando a classe:
 5. cadastrar exemplar
 6. cadastrar usuario
 7. registrar emprestimo
-8. registrar devolucao
-9. consultar multa gerada por atraso
-10. pagar multa
+8. consultar emprestimos por usuario
+9. registrar devolucao
+10. consultar multa gerada por atraso
+11. pagar multa
 
 ## Limites Atuais Da V1
 
@@ -479,7 +483,7 @@ Esta versao ainda pode evoluir em varios pontos, por exemplo:
 - Flyway ou Liquibase
 - reservas
 - renovacao de emprestimos
-- historico detalhado do usuario
+- historico detalhado do usuario com filtros mais ricos
 - limite de emprestimos simultaneos
 - bloqueio automatico mais rico por inadimplencia
 
@@ -487,7 +491,7 @@ Esta versao ainda pode evoluir em varios pontos, por exemplo:
 
 - adicionar reserva de livros
 - adicionar renovacao de emprestimos
-- adicionar historico de emprestimos por usuario
+- enriquecer historico de emprestimos por usuario com filtros e ordenacao
 - adicionar limite de emprestimos simultaneos
 - adicionar autenticacao com Spring Security e JWT
 - trocar H2 por PostgreSQL
