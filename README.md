@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Biblioteca v1
 
 API REST de biblioteca desenvolvida com `Java`, `Spring Boot`, `Spring Web`, `Spring Data JPA`, `Hibernate`, `Bean Validation`, `Lombok` e banco `H2`.
@@ -456,5 +455,3 @@ Esta versao ainda pode evoluir em varios pontos, por exemplo:
 - criar testes unitarios e de integracao
 - adicionar documentacao da API com Swagger
 =======
-# Sistema-de-Biblioteca
->>>>>>> 53baa06d3aebdc2540ce14652bcdc9f7af88386a
